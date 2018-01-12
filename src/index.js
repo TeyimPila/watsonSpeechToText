@@ -17,16 +17,21 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { conversation: [], audio: null, stream: stream };
+        this.state = { response: '', audio: null, stream: stream };
         this.transcribeAudio(null);
         this.stopTranscription();
     }
 
     transcribeAudio(props) {
+
         // console.log(props);
 
         if (props !== null && (props.type === 1 || props.type === 0)) {
-            // console.log(props);
+
+            if (this.state.stream) {
+                this.setState({ response: '', audio: null })
+                this.state.stream.stop()
+            }
 
             let authorization = new AuthorizationV1({
                 username: USER_NAME,
@@ -40,19 +45,19 @@ class App extends Component {
                         stream = SpeechToText.recognizeMicrophone({
                             token: token,
                             model: 'en-US_NarrowbandModel',
-                            resultsBySpeaker: true, // pipes results through a SpeakerStream, and also enables speaker_labels and objectMode
+                            // resultsBySpeaker: true, // pipes results through a SpeakerStream, and also enables speaker_labels and objectMode
                             realtime: false, // don't slow down the results if transcription occurs faster than playback
-                            extractResults: true
+                            // extractResults: true
                             // outputElement: '#output' // CSS selector or DOM Element (optional)
                         })
                     } else {
                         stream = SpeechToText.recognizeFile({
                             token: token,
                             file: props.audio,
-                            extractResults: true,
+                            // extractResults: true,
                             // outputElement: '#output', // CSS selector or DOM Element (optional)
                             model: 'en-US_NarrowbandModel',
-                            resultsBySpeaker: true, // pipes results through a SpeakerStream, and also enables speaker_labels and objectMode
+                            // resultsBySpeaker: true, // pipes results through a SpeakerStream, and also enables speaker_labels and objectMode
                             realtime: false, // don't slow down the results if transcription occurs faster than playback
                             play: true
                         })
@@ -61,7 +66,8 @@ class App extends Component {
                     this.setState({ stream })
 
                     stream.on('data', function (data) {
-                        this.setState({ conversation: this.state.conversation.concat(data) })
+                        const text = data.toString()
+                        this.setState({ response: this.state.response += text })
                     }.bind(this))
 
                 } else {
@@ -74,7 +80,7 @@ class App extends Component {
     stopTranscription() {
         if (this.state.stream) {
             this.state.stream.stop()
-            this.setState({})
+            this.setState({ audio: null, stream: null })
         }
     }
 
@@ -82,8 +88,7 @@ class App extends Component {
         return (
             <div>
                 <SearchBar onAudioUpload={props => this.transcribeAudio(props)} onStopClicked={event => this.stopTranscription()} />
-                <TranscribedText response={this.state.conversation} />
-                {/* <div id="output"></div> */}
+                <TranscribedText response={this.state.response} />
             </div>
         );
     }

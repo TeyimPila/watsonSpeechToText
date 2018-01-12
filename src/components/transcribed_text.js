@@ -2,37 +2,17 @@ import React from 'react';
 
 const TranscribedText = ({ response }) => {
 
-    console.log(response);
-    // if (!response) {
-    //     return <div>Waiting...</div>
-    // }
-    // const output = response.map(function (text) {
+    if (!response) {
+        return <div className="col-md-8 col-md-offset-2 display-area ">
+            <div className='text-center'><h4>Upload a file and play or click "Use Mic" and Record</h4></div></div>
+    }
 
-    //     return text.results.map(function (alternative) {
-    //         if (alternative.speaker === 0) {
-    //             let speaker = "Speaker 1 ";
-    //             return alternative.alternatives.map(function (alt) {
-    //                 console.log(alt)
-    //                 return <li>{speaker += alt.transcript}</li>
-    //             })
-    // }
-    // return <li>{alternative.speaker}</li>
-    // console.log(alternative.speaker);
-    // alternative.alternatives.map(function (alt) {
-    //     // console.log(alt)
-    // });
-
-    // });
-    // console.log(text)
-    // })
-
-    // if (!text) {
-    //     return <div>Transcribing...</div>
-    // }
-    // const conversation = text.map((text) => {
-    //     return <li key={text}>{text}</li>;
-    // })
-    return <ul className="col-md-6 list-group">'output'</ul>
+    return <div className="col-md-8 col-md-offset-2 display-area">
+        <div className='panel panel-default'>
+            <div className='panel-heading text-center'><h3>Transcribing</h3></div>
+            <div className='panel-body'>{response}</div>
+        </div>
+    </div>
 }
 
 export default TranscribedText;
