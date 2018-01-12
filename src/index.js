@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import SearchBar from './components/search_bar';
 import TranscribedText from "./components/transcribed_text";
 import { SpeechToText } from 'watson-speech';
-import { AuthorizationV1 } from 'watson-developer-cloud';
+import { AuthorizationV1, SpeechToTextV1 } from 'watson-developer-cloud';
 
 // Text-to-speech Credentials: Supposed to be stored as environment variables
 const USER_NAME = '0125826b-2f5d-4365-8546-bd6830adc6e6';
