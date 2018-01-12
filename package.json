@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.17.1",
+    "file-type": "^7.4.0",
     "fs": "0.0.1-security",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
