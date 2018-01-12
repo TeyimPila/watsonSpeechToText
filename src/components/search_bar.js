@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 class SearchBar extends Component {
+
     constructor(props) {
         super(props);
         this.state = { file: '' }
@@ -25,6 +26,13 @@ class SearchBar extends Component {
         )
     }
 
+    /**
+     * Handles onClick event on the play button and calls the 
+     * callback that initiates transcription in index.js
+     * 
+     * @param {audio file} audio 
+     * @param {transcription method: 1|0} type 
+     */
     onPlayClicked(audio, type = 0) {
         this.props.onAudioUpload({ audio: audio, type: type });
     }

@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import React, { Component } from 'react';
 import SearchBar from './components/search_bar';
 import TranscribedText from "./components/transcribed_text";
-import { SpeechToText, WetsonSpeech } from 'watson-speech';
-import { AuthorizationV1, SpeechToTextV1 } from 'watson-developer-cloud';
-import Websocket from 'react-websocket'
+import { SpeechToText } from 'watson-speech';
+import { AuthorizationV1 } from 'watson-developer-cloud';
 
+// Text-to-speech Credentials: Supposed to be stored as environment variables
 const USER_NAME = '0125826b-2f5d-4365-8546-bd6830adc6e6';
 const PASSWORD = 'dPRSipKFpTNb';
 
@@ -22,9 +22,14 @@ class App extends Component {
         this.stopTranscription();
     }
 
+    /**
+     * This method retrieves an authorization token and 
+     * uses it to perfrom API calls for transction using audio and type keys
+     * provided in props object.
+     * 
+     * @param {audio: file, type: transcription type} props 
+     */
     transcribeAudio(props) {
-
-        // console.log(props);
 
         if (props !== null && (props.type === 1 || props.type === 0)) {
 
@@ -45,19 +50,13 @@ class App extends Component {
                         stream = SpeechToText.recognizeMicrophone({
                             token: token,
                             model: 'en-US_NarrowbandModel',
-                            // resultsBySpeaker: true, // pipes results through a SpeakerStream, and also enables speaker_labels and objectMode
-                            realtime: false, // don't slow down the results if transcription occurs faster than playback
-                            // extractResults: true
-                            // outputElement: '#output' // CSS selector or DOM Element (optional)
+                            realtime: false,
                         })
                     } else {
                         stream = SpeechToText.recognizeFile({
                             token: token,
                             file: props.audio,
-                            // extractResults: true,
-                            // outputElement: '#output', // CSS selector or DOM Element (optional)
                             model: 'en-US_NarrowbandModel',
-                            // resultsBySpeaker: true, // pipes results through a SpeakerStream, and also enables speaker_labels and objectMode
                             realtime: false, // don't slow down the results if transcription occurs faster than playback
                             play: true
                         })
@@ -77,6 +76,11 @@ class App extends Component {
         }
     }
 
+
+    /**
+     * Stops the stream and reset state variables 
+     * when stop button is pressed.
+     */
     stopTranscription() {
         if (this.state.stream) {
             this.state.stream.stop()
@@ -84,6 +88,9 @@ class App extends Component {
         }
     }
 
+    /**
+     * Renders component on DOM
+     */
     render() {
         return (
             <div>

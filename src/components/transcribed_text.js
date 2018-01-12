@@ -4,7 +4,8 @@ const TranscribedText = ({ response }) => {
 
     if (!response) {
         return <div className="col-md-8 col-md-offset-2 display-area ">
-            <div className='text-center'><h4>Upload a file and play or click "Use Mic" and Record</h4></div></div>
+            <h4>Upload a file and play or click "Use Mic" and Record</h4>
+        </div>
     }
 
     return <div className="col-md-8 col-md-offset-2 display-area">
