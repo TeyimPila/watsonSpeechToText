@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 
 import React, { Component } from 'react';
-import SearchBar from './components/search_bar';
+import ControlBar from './components/search_bar';
 import TranscribedText from "./components/transcribed_text";
 import { SpeechToText } from 'watson-speech';
 import { AuthorizationV1, SpeechToTextV1 } from 'watson-developer-cloud';
@@ -10,17 +10,150 @@ import { AuthorizationV1, SpeechToTextV1 } from 'watson-developer-cloud';
 const USER_NAME = '0125826b-2f5d-4365-8546-bd6830adc6e6';
 const PASSWORD = 'dPRSipKFpTNb';
 
-let stream = null
 
 class App extends Component {
 
     constructor(props) {
         super(props);
 
-        this.state = { response: '', audio: null, stream: stream };
+        this.state = { transciptionData: [], token: '', error: null, labelSpeaker: false };
         this.transcribeAudio(null);
         this.stopTranscription();
     }
+
+    componentDidMount() {
+        this.getApiToken()
+    }
+
+    getApiToken() {
+        let authorization = new AuthorizationV1({
+            username: USER_NAME,
+            password: PASSWORD,
+            url: SpeechToTextV1.URL
+        });
+
+
+        authorization.getToken(function (error, token) {
+            if (token) {
+                this.setState({ token });
+            } else {
+                this.setState({ error });
+                throw new Error('Oops! There was an error retrieving the token');
+            }
+        });
+    }
+
+    getTranscriptionOptions(extras) {
+        return Object.assign({
+            token: this.state.token,
+            objectMode: true,
+            interim_results: true,
+            resultsBySpeaker: this.state.labelSpeaker,
+            model: 'en-US_NarrowbandModel',
+            realtime: false,
+        }, extras);
+    }
+
+    transcibeFile(files) {
+
+        const file = this.validateFile(files);
+
+        if (this.state.audioSource === 'user-file') {
+            this.stopTranscription();
+            return;
+        }
+
+        this.reset();
+        this.setState({ audioSource: 'user-file' });
+
+        this.handleResponse(SpeechToText.recognizeFile(this.getTranscriptionOptions({ file: file, play: true })));
+    }
+
+    validateFile(files) {
+        const file = files[0];
+
+        if (!file) {
+            this.setState({ error: 'Please select a valid file' })
+            return;
+        }
+
+        return file
+    }
+
+    transcribeFromMic() {
+        if (this.state.audioSource === 'microphone') {
+            this.stopTranscription();
+            return;
+        }
+
+        this.reset();
+        this.setState({ audioSource: 'microphone' });
+
+        this.handleResponse(SpeechToText.recognizeMicrophone(this.getTranscriptionOptions()));
+    }
+
+    // transcribeSample(linkToFile) {
+    //     if (this.state.audioSource === 'sample') {
+    //         this.stopTranscription();
+    //         return;
+    //     }
+
+    //     this.reset();
+    //     this.setState({ audioSource: 'sample' });
+
+    //     this.handleResponse(SpeechToText.recognizeFile(this.getTranscriptionOptions({ file: linkToFile })));
+    // }
+
+
+    handleResponse(stream) {
+        console.log(stream);
+
+        //since this is a new incoming response, we "clear the old to give way for the new"
+        if (this.stream) {
+            this.stream.stop();
+            this.stream.removeAllListeners();
+            this.stream.recognizeStream.removeAllListeners();
+        }
+
+        this.stream = stream;
+
+        this.strean.on('data', this.updateStateWithData).on('end', this.handleStreamEnd);
+    }
+
+
+    updateStateWithData(data) {
+        this.setState({ transciptionData: this.state.transciptionData.concat(data) });
+    }
+
+    stopTranscription() {
+        if (this.stream) {
+            this.stream.stop();
+        }
+    }
+
+    reset() {
+        if (this.state.audioSource) {
+            this.stopTranscription();
+        }
+        this.setState({ transciptionData: [], error: null });
+    }
+
+    toggleSpeakerLabeling() {
+        this.setState({
+            labelSpeaker: !this.state.labelSpeaker,
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * This method retrieves an authorization token and 
@@ -29,64 +162,66 @@ class App extends Component {
      * 
      * @param {audio: file, type: transcription type} props 
      */
-    transcribeAudio(props) {
+    // transcribeAudio(props) {
 
-        if (props !== null && (props.type === 1 || props.type === 0)) {
+    //     if (props !== null && (props.type === 1 || props.type === 0)) {
 
-            if (this.state.stream) {
-                this.setState({ response: '', audio: null })
-                this.state.stream.stop()
-            }
+    //         if (this.state.stream) {
+    //             this.setState({ response: '', audio: null })
+    //             this.state.stream.stop()
+    //         }
 
-            let authorization = new AuthorizationV1({
-                username: USER_NAME,
-                password: PASSWORD,
-                url: SpeechToTextV1.URL
-            });
+    //         let authorization = new AuthorizationV1({
+    //             username: USER_NAME,
+    //             password: PASSWORD,
+    //             url: SpeechToTextV1.URL
+    //         });
 
-            authorization.getToken(function (error, token) {
-                if (token) {
-                    if (props.type === 1) {
-                        stream = SpeechToText.recognizeMicrophone({
-                            token: token,
-                            model: 'en-US_NarrowbandModel',
-                            realtime: false,
-                        })
-                    } else {
-                        stream = SpeechToText.recognizeFile({
-                            token: token,
-                            file: props.audio,
-                            model: 'en-US_NarrowbandModel',
-                            realtime: false, // don't slow down the results if transcription occurs faster than playback
-                            play: true
-                        })
-                    }
+    //         authorization.getToken(function (error, token) {
+    //             if (token) {
+    //                 if (props.type === 1) {
+    //                     stream = SpeechToText.recognizeMicrophone({
+    //                         token: token,
+    //                         model: 'en-US_NarrowbandModel',
+    //                         realtime: false,
+    //                         resultsBySpeaker: true,
+    //                     })
+    //                 } else {
+    //                     stream = SpeechToText.recognizeFile({
+    //                         token: token,
+    //                         file: props.audio,
+    //                         resultsBySpeaker: true,
+    //                         model: 'en-US_NarrowbandModel',
+    //                         realtime: false, // don't slow down the results if transcription occurs faster than playback
+    //                         play: true
+    //                     })
+    //                 }
 
-                    this.setState({ stream })
+    //                 this.setState({ stream })
 
-                    stream.on('data', function (data) {
-                        const text = data.toString()
-                        this.setState({ response: this.state.response += text })
-                    }.bind(this))
+    //                 stream.on('data', function (data) {
+    //                     // const text = data.toString()
+    //                     this.setState({ response: this.state.response += text })
+    //                 }.bind(this))
 
-                } else {
-                    console.log('Error: ', error);
-                }
-            }.bind(this));
-        }
-    }
+    //             } else {
+    //                 console.log('Error: ', error);
+    //             }
+    //         }.bind(this));
+    //     }
+    // }
 
 
     /**
      * Stops the stream and reset state variables 
      * when stop button is pressed.
      */
-    stopTranscription() {
-        if (this.state.stream) {
-            this.state.stream.stop()
-            this.setState({ audio: null, stream: null })
-        }
-    }
+    // stopTranscription() {
+    //     if (this.state.stream) {
+    //         this.state.stream.stop()
+    //         this.setState({ audio: null, stream: null })
+    //     }
+    // }
 
     /**
      * Renders component on DOM
@@ -94,8 +229,8 @@ class App extends Component {
     render() {
         return (
             <div>
-                <SearchBar onAudioUpload={props => this.transcribeAudio(props)} onStopClicked={event => this.stopTranscription()} />
-                <TranscribedText response={this.state.response} />
+                <ControlBar />
+                <TranscribedText />
             </div>
         );
     }
