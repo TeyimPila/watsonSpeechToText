@@ -16,7 +16,7 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        this.state = { transciptionData: [], token: '', error: null, labelSpeaker: false };
+        this.state = { transcriptionResponse: [], token: '', error: null, labelSpeaker: false };
         this.transcribeAudio(null);
         this.stopTranscription();
     }
@@ -31,7 +31,6 @@ class App extends Component {
             password: PASSWORD,
             url: SpeechToTextV1.URL
         });
-
 
         authorization.getToken(function (error, token) {
             if (token) {
@@ -122,7 +121,7 @@ class App extends Component {
 
 
     updateStateWithData(data) {
-        this.setState({ transciptionData: this.state.transciptionData.concat(data) });
+        this.setState({ transcriptionResponse: this.state.transcriptionResponse.concat(data) });
     }
 
     stopTranscription() {
@@ -135,7 +134,7 @@ class App extends Component {
         if (this.state.audioSource) {
             this.stopTranscription();
         }
-        this.setState({ transciptionData: [], error: null });
+        this.setState({ transcriptionResponse: [], error: null });
     }
 
     toggleSpeakerLabeling() {
@@ -144,12 +143,30 @@ class App extends Component {
         });
     }
 
+    getLatestTranscriptionResponse() {
+        const latestResponse = this.state.transcriptionResponse[this.state.transcriptionResponse.length - 1];
 
-    getLatestResponse() {
-        const latest = this.state.formattedMessages[this.state.formattedMessages.length - 1];
-
+        if (!latestResponse || !latestResponse.results || !latestResponse.results.length || latestResponse.results[0].final) {
+            return null;
+        }
+        return latestResponse;
     }
 
+    getFinalTranscriptionResponse() {
+        return this.state.transcriptionResponse.filter(response => response.results &&
+            response.results.length && response.results[0].final);
+    }
+
+    getResponse() {
+        const finalResponse = this.getFinalTranscriptionResponse();
+        const latestResponse = this.getLatestTranscriptionResponse();
+
+        if (latestResponse) {
+            finalResponse.push(latestResponse);
+        }
+
+        return final;
+    }
 
 
 
