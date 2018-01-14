@@ -24,7 +24,6 @@ class App extends Component {
         this.getApiToken = this.getApiToken.bind(this);
         this.getTranscriptionOptions = this.getTranscriptionOptions.bind(this);
         this.transcibeFile = this.transcibeFile.bind(this);
-        // this.validateFile = this.validateFile.bind(this);
         this.transcribeFromMic = this.transcribeFromMic.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
         this.updateStateWithData = this.updateStateWithData.bind(this);
@@ -95,20 +94,6 @@ class App extends Component {
         this.handleResponse(SpeechToText.recognizeFile(this.getTranscriptionOptions({ file: userFile, play: true })));
     }
 
-    // /**
-    //  * Helper method for validating provided file
-    //  * 
-    //  * @param {file} file 
-    //  */
-    // validateFile(file) {
-
-    //     if (!file) {
-    //         this.setState({ error: 'Please select a valid file' })
-    //         return;
-    //     }
-
-    //     return file
-    // }
 
     /**
      * Performs transcription by listening to microphone input
