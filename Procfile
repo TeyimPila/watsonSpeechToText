@@ -1,2 +1,2 @@
-web: react-scripts start
-api: nodemon server.js
+web: cd client && npm start
+api: PORT=3001 npm run server

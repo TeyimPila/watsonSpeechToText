@@ -11,7 +11,6 @@ const authorization = new watson.AuthorizationV1({
 exports.getToken = (req, res) => {
 
     authorization.getToken((error, token) => {
-        console.log(process.env)
         if (error) {
             res.send(watson.SpeechToTextV1.URL)
         } else {
