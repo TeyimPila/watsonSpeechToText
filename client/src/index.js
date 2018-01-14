@@ -24,7 +24,7 @@ class App extends Component {
         this.getApiToken = this.getApiToken.bind(this);
         this.getTranscriptionOptions = this.getTranscriptionOptions.bind(this);
         this.transcibeFile = this.transcibeFile.bind(this);
-        this.validateFile = this.validateFile.bind(this);
+        // this.validateFile = this.validateFile.bind(this);
         this.transcribeFromMic = this.transcribeFromMic.bind(this);
         this.handleResponse = this.handleResponse.bind(this);
         this.updateStateWithData = this.updateStateWithData.bind(this);
@@ -79,7 +79,10 @@ class App extends Component {
      */
     transcibeFile(userFile) {
 
-        const file = this.validateFile(userFile);
+        if (!userFile) {
+            this.setState({ error: 'Please select a valid file' })
+            return;
+        }
 
         if (this.state.transcriptionType === 'user-file') {
             this.stopTranscription();
@@ -89,23 +92,23 @@ class App extends Component {
         this.reset();
         this.setState({ transcriptionType: 'user-file' });
 
-        this.handleResponse(SpeechToText.recognizeFile(this.getTranscriptionOptions({ file: file, play: true })));
+        this.handleResponse(SpeechToText.recognizeFile(this.getTranscriptionOptions({ file: userFile, play: true })));
     }
 
-    /**
-     * Helper method for validating provided file
-     * 
-     * @param {file} file 
-     */
-    validateFile(file) {
+    // /**
+    //  * Helper method for validating provided file
+    //  * 
+    //  * @param {file} file 
+    //  */
+    // validateFile(file) {
 
-        if (!file) {
-            this.setState({ error: 'Please select a valid file' })
-            return;
-        }
+    //     if (!file) {
+    //         this.setState({ error: 'Please select a valid file' })
+    //         return;
+    //     }
 
-        return file
-    }
+    //     return file
+    // }
 
     /**
      * Performs transcription by listening to microphone input
@@ -232,7 +235,7 @@ class App extends Component {
                     isChecked={this.state.labelSpeaker}
                     onToggleSpeakerLabel={this.toggleSpeakerLabeling}
                     onPlayClicked={this.transcibeFile}
-                    onMicClicked={this.transcribeFromMic}
+                    // onMicClicked={this.transcribeFromMic}
                     onStopClicked={this.stopTranscription} />
 
                 <DisplayPanel

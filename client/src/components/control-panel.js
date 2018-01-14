@@ -4,7 +4,7 @@ class ControlPanel extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { file: '' }
+        this.state = { file: null }
     }
 
     render() {
@@ -32,7 +32,7 @@ class ControlPanel extends Component {
                 <div className="input-group control-buttons">
                     <button onClick={event => this.props.onPlayClicked(this.state.file)} className="btn btn-secondary">Play</button>
                     <button onClick={event => this.props.onStopClicked(event)} className="btn btn-secondary">Stop</button>
-                    <button onClick={event => this.props.onMicClicked(event)} className="btn btn-secondary">Use Mic</button>
+                    {/* <button onClick={event => this.props.onMicClicked(event)} className="btn btn-secondary">Use Mic</button> */}
                 </div>
                 <hr></hr>
             </div>
