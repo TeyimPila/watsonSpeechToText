@@ -13,6 +13,7 @@ class ControlPanel extends Component {
 
                 <input
                     type="file"
+                    accept="audio/wav, audio/mp3, audio/mpeg, audio/l16, audio/ogg, audio/flac, .mp3, .mpeg, .wav, .ogg, .opus, .flac"
                     className="form-control search-bar"
                     onChange={event => this.setState({ file: event.target.files[0] })}
                 />
