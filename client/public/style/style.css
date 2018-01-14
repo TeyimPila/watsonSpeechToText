@@ -23,8 +23,16 @@
     margin: 0 auto !important;
 }
 
-button{
-    margin: 5px !important;
+label{
+   margin: 0 !important;
+}
+
+.btn{
+    margin: 10px !important;
+}
+
+.checkbox{
+    margin: 0 10px 5px 10px !important;
 }
   
 .input-group {

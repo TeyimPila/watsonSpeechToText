@@ -12,7 +12,7 @@ exports.getToken = (req, res) => {
 
     authorization.getToken((error, token) => {
         if (error) {
-            res.send(watson.SpeechToTextV1.URL)
+            res.send(error)
         } else {
             res.send(token)
         }

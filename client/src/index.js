@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 
 import React, { Component } from 'react';
 import ControlPanel from './components/control-panel';
-import TranscribedText from "./components/display-panel";
+import DisplayPanel from "./components/display-panel";
 import { SpeechToText } from 'watson-speech';
 
 
@@ -10,7 +10,7 @@ class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { audioSource: '', transcriptionResponse: [], token: '', error: null, labelSpeaker: false };
+        this.state = { transcriptionType: null, transcriptionResponse: [], token: '', error: null, labelSpeaker: false };
 
         //Bind methods to the component
         this.getApiToken = this.getApiToken.bind(this);
@@ -33,13 +33,13 @@ class App extends Component {
     }
 
     getApiToken() {
-        return fetch('/getToken').then((res) => {
+        return fetch('/v1/api/getToken').then((res) => {
             if (res.status !== 200) {
-                throw new Error('Error retrieving auth token');
+                this.setState({ error: 'Error retrieving auth token' })
+                return;
             }
             return res.text();
-        }) // todo: throw here if non-200 status
-            .then(token => this.setState({ token })).catch(this.handleError);
+        }).then(token => this.setState({ token })).catch(this.handleError);
     }
 
     getTranscriptionOptions(extras) {
@@ -57,13 +57,13 @@ class App extends Component {
 
         const file = this.validateFile(userFile);
 
-        if (this.state.audioSource === 'user-file') {
+        if (this.state.transcriptionType === 'user-file') {
             this.stopTranscription();
             return;
         }
 
         this.reset();
-        this.setState({ audioSource: 'user-file' });
+        this.setState({ transcriptionType: 'user-file' });
 
         this.handleResponse(SpeechToText.recognizeFile(this.getTranscriptionOptions({ file: file, play: true })));
     }
@@ -79,29 +79,16 @@ class App extends Component {
     }
 
     transcribeFromMic() {
-        if (this.state.audioSource === 'microphone') {
+        if (this.state.transcriptionType === 'microphone') {
             this.stopTranscription();
             return;
         }
 
         this.reset();
-        this.setState({ audioSource: 'microphone' });
+        this.setState({ transcriptionType: 'microphone' });
 
         this.handleResponse(SpeechToText.recognizeMicrophone(this.getTranscriptionOptions()));
     }
-
-    // transcribeSample(linkToFile) {
-    //     if (this.state.audioSource === 'sample') {
-    //         this.stopTranscription();
-    //         return;
-    //     }
-
-    //     this.reset();
-    //     this.setState({ audioSource: 'sample' });
-
-    //     this.handleResponse(SpeechToText.recognizeFile(this.getTranscriptionOptions({ file: linkToFile })));
-    // }
-
 
     handleResponse(stream) {
 
@@ -133,7 +120,7 @@ class App extends Component {
     }
 
     reset() {
-        if (this.state.audioSource) {
+        if (this.state.transcriptionType) {
             this.stopTranscription();
         }
         this.setState({ transcriptionResponse: [], error: null });
@@ -172,15 +159,22 @@ class App extends Component {
 
 
     render() {
-        // const transcription = this.getResponse();
+        const transcription = this.getResponse();
 
         return (
             <div>
-                {this.state.token}
+                <div className="text-danger">{this.state.error ? this.state.error : ''}</div>
                 <ControlPanel
+                    isChecked={this.state.labelSpeaker}
+                    onToggleSpeakerLabel={this.toggleSpeakerLabeling}
                     onPlayClicked={this.transcibeFile}
-                    onMicClicked={this.transcribeFromMic} />
-                <TranscribedText />
+                    onMicClicked={this.transcribeFromMic}
+                    onStopClicked={this.stopTranscription} />
+
+                <DisplayPanel
+                    transcription={transcription}
+                    labelSpeaker={this.state.labelSpeaker}
+                />
             </div>
         );
     }

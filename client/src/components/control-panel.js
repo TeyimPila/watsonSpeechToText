@@ -17,9 +17,19 @@ class ControlPanel extends Component {
                 />
 
                 <div className="input-group control-buttons">
+                    <input
+                        checked={this.props.isChecked}
+                        className="btn checkbox"
+                        type='checkbox'
+                        id='toggle-speaker-label'
+                        onChange={event => this.props.onToggleSpeakerLabel(event)} />
+                    <label htmlFor='toggle-speaker-label'>Label Speaker</label>
+                </div>
+
+                <div className="input-group control-buttons">
                     <button onClick={event => this.props.onPlayClicked(this.state.file)} className="btn btn-secondary">Play</button>
                     <button onClick={event => this.props.onStopClicked(event)} className="btn btn-secondary">Stop</button>
-                    <button onClick={event => this.props.onMicClicked(this.state.file)} className="btn btn-secondary">Use Mic</button>
+                    <button onClick={event => this.props.onMicClicked(event)} className="btn btn-secondary">Use Mic</button>
                 </div>
                 <hr></hr>
             </div>
