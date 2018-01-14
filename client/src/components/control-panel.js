@@ -10,6 +10,7 @@ class ControlPanel extends Component {
     render() {
         return (
             <div className="col-md-8 col-md-offset-2">
+
                 <input
                     type="file"
                     className="form-control search-bar"
@@ -23,6 +24,7 @@ class ControlPanel extends Component {
                         type='checkbox'
                         id='toggle-speaker-label'
                         onChange={event => this.props.onToggleSpeakerLabel(event)} />
+
                     <label htmlFor='toggle-speaker-label'>Label Speaker</label>
                 </div>
 
@@ -33,10 +35,8 @@ class ControlPanel extends Component {
                 </div>
                 <hr></hr>
             </div>
-        )
+        );
     }
-
-
 }
 
 export default ControlPanel;

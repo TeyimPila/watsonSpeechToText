@@ -10,9 +10,17 @@ class App extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { transcriptionType: null, transcriptionResponse: [], token: '', error: null, labelSpeaker: false };
 
-        //Bind methods to the component
+        //Initialize component state.
+        this.state = {
+            transcriptionType: null,
+            transcriptionResponse: [],
+            token: '',
+            error: null,
+            labelSpeaker: false
+        };
+
+        //Bind methods to the class component
         this.getApiToken = this.getApiToken.bind(this);
         this.getTranscriptionOptions = this.getTranscriptionOptions.bind(this);
         this.transcibeFile = this.transcibeFile.bind(this);
@@ -28,10 +36,15 @@ class App extends Component {
         this.getResponse = this.getResponse.bind(this);
     }
 
+    //Immediate component mounts, go fetch token
     componentDidMount() {
         this.getApiToken()
     }
 
+    /**
+     * Makes api call to the server (nodeJS/Express),
+     * fetches a token and stores in state.
+     */
     getApiToken() {
         return fetch('/v1/api/getToken').then((res) => {
             if (res.status !== 200) {
@@ -42,6 +55,12 @@ class App extends Component {
         }).then(token => this.setState({ token })).catch(this.handleError);
     }
 
+    /**
+     * This method returns options that will be 
+     * used for making the transcription API call
+     * 
+     * @param {object: additional params} extras 
+     */
     getTranscriptionOptions(extras) {
         return Object.assign({
             token: this.state.token,
@@ -53,6 +72,11 @@ class App extends Component {
         }, extras);
     }
 
+    /**
+     * Takes a file (upload) and uses it for transcription
+     * 
+     * @param {file} userFile 
+     */
     transcibeFile(userFile) {
 
         const file = this.validateFile(userFile);
@@ -68,6 +92,11 @@ class App extends Component {
         this.handleResponse(SpeechToText.recognizeFile(this.getTranscriptionOptions({ file: file, play: true })));
     }
 
+    /**
+     * Helper method for validating provided file
+     * 
+     * @param {file} file 
+     */
     validateFile(file) {
 
         if (!file) {
@@ -78,6 +107,9 @@ class App extends Component {
         return file
     }
 
+    /**
+     * Performs transcription by listening to microphone input
+     */
     transcribeFromMic() {
         if (this.state.transcriptionType === 'microphone') {
             this.stopTranscription();
@@ -90,9 +122,15 @@ class App extends Component {
         this.handleResponse(SpeechToText.recognizeMicrophone(this.getTranscriptionOptions()));
     }
 
+    /**
+     * Takes in a new incoming stream returned, 
+     * extract data from it and updates state
+     * 
+     * @param {transcription stream} stream 
+     */
     handleResponse(stream) {
 
-        //since this is a new incoming response, we "clear the old to give way for the new"
+        //since this is a new incoming response, we "...clear out the old to give way for the new."
         if (this.stream) {
             this.stream.stop();
             this.stream.removeAllListeners();
@@ -108,17 +146,26 @@ class App extends Component {
         console.log(error);
     }
 
+    /**
+     * Upon successful transcription, update state with data.
+     * @param {trascription data} data 
+     */
     updateStateWithData(data) {
-        console.log(data);
         this.setState({ transcriptionResponse: this.state.transcriptionResponse.concat(data) });
     }
 
+    /**
+     * Stops transcription if there is any in progress
+     */
     stopTranscription() {
         if (this.stream) {
             this.stream.stop();
         }
     }
 
+    /**
+     * Stops streamin and clears existing data from state
+     */
     reset() {
         if (this.state.transcriptionType) {
             this.stopTranscription();
@@ -126,12 +173,18 @@ class App extends Component {
         this.setState({ transcriptionResponse: [], error: null });
     }
 
+    /**
+     * Toggles the label user option. 0|1. 
+     */
     toggleSpeakerLabeling() {
         this.setState({
             labelSpeaker: !this.state.labelSpeaker,
         });
     }
 
+    /**
+     * Extracts the latest interin response from data stored on state.
+     */
     getLatestTranscriptionResponse() {
         const latestResponse = this.state.transcriptionResponse[this.state.transcriptionResponse.length - 1];
 
@@ -141,11 +194,18 @@ class App extends Component {
         return latestResponse;
     }
 
+    /**
+     * gets results tagged as final.
+     */
     getFinalTranscriptionResponse() {
         return this.state.transcriptionResponse.filter(response => response.results &&
             response.results.length && response.results[0].final);
     }
 
+    /**
+     * Concatenates interin responses to final responsese to produce 
+     * a final response ready for display without repititions
+     */
     getResponse() {
         const finalResponse = this.getFinalTranscriptionResponse();
         const latestResponse = this.getLatestTranscriptionResponse();
@@ -158,12 +218,16 @@ class App extends Component {
     }
 
 
+    /**
+     * Render!
+     */
     render() {
         const transcription = this.getResponse();
 
         return (
             <div>
                 <div className="text-danger">{this.state.error ? this.state.error : ''}</div>
+
                 <ControlPanel
                     isChecked={this.state.labelSpeaker}
                     onToggleSpeakerLabel={this.toggleSpeakerLabeling}

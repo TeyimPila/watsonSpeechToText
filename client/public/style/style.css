@@ -42,3 +42,29 @@ label{
 svg {
     height: 200px;
 }
+
+.speaker-label{
+    font-weight: bold;
+}
+
+.speaker-0{
+    color: #FFC107;
+}
+
+.speaker-1{
+    color: #9C27B0;
+}
+
+.speaker-2{
+    color: #03A9F4;
+}
+.speaker-3{
+    color: #009688;
+}
+.speaker-4{
+    color: #795548;
+}
+.speaker-5{
+    color: #607D8B;
+}
+

@@ -8,13 +8,13 @@ const authorization = new watson.AuthorizationV1({
     url: watson.SpeechToTextV1.URL
 });
 
-exports.getToken = (req, res) => {
+exports.getToken = (request, response) => {
 
     authorization.getToken((error, token) => {
         if (error) {
-            res.send(error)
+            response.send(error)
         } else {
-            res.send(token)
+            response.send(token)
         }
-    })
+    });
 }

@@ -4,7 +4,9 @@ const DisplayUnlabeled = (props) => {
 
     const message = props.transcripts.map(transcript =>
         transcript.results.map((result, i) => (
-            <span key={`result-${transcript.result_index + i}`}>{result.alternatives[0].transcript}</span>
+            <span key={`result-${transcript.result_index + i}`}>
+                {result.alternatives[0].transcript}
+            </span>
         )),
     ).reduce((a, b) => a.concat(b), []); // the reduce() call flattens the array
 
@@ -14,7 +16,6 @@ const DisplayUnlabeled = (props) => {
             <div className='panel-body'>{message}</div>
         </div>
     </div>
-
 }
 
 export default DisplayUnlabeled;
