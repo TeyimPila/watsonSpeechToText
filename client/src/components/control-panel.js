@@ -32,7 +32,11 @@ class ControlPanel extends Component {
                 <div className="input-group control-buttons">
                     <button onClick={event => this.props.onPlayClicked(this.state.file)} className="btn btn-secondary">Play</button>
                     <button onClick={event => this.props.onStopClicked(event)} className="btn btn-secondary">Stop</button>
-                    {/* <button onClick={event => this.props.onMicClicked(event)} className="btn btn-secondary">Use Mic</button> */}
+                    <button onClick={event => this.props.onMicClicked(event)} className="btn btn-secondary">Use Mic</button>
+                </div>
+
+                <div className="input-group control-buttons">
+                    <small className="text-info">NOTE: The microphone feature is not supported on Safari. Try it on Google Chrome.</small>
                 </div>
                 <hr></hr>
             </div>

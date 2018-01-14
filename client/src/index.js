@@ -79,7 +79,7 @@ class App extends Component {
     transcibeFile(userFile) {
 
         if (!userFile) {
-            this.setState({ error: 'Please select a valid file' })
+            this.setState({ error: 'Please select a valid file.' })
             return;
         }
 
@@ -106,6 +106,11 @@ class App extends Component {
 
         this.reset();
         this.setState({ transcriptionType: 'microphone' });
+
+        if (!this.state.token) {
+            this.setState({ error: 'There was an error retrieving an access token. Try again soon.' })
+            return;
+        }
 
         this.handleResponse(SpeechToText.recognizeMicrophone(this.getTranscriptionOptions()));
     }
@@ -214,14 +219,17 @@ class App extends Component {
 
         return (
             <div>
-                <div className="text-danger">{this.state.error ? this.state.error : ''}</div>
+                <div className="input-group control-buttons">
+                    <div className="text-danger">{this.state.error ? this.state.error : ''}</div>
+                </div>
 
                 <ControlPanel
                     isChecked={this.state.labelSpeaker}
                     onToggleSpeakerLabel={this.toggleSpeakerLabeling}
                     onPlayClicked={this.transcibeFile}
-                    // onMicClicked={this.transcribeFromMic}
+                    onMicClicked={this.transcribeFromMic}
                     onStopClicked={this.stopTranscription} />
+
 
                 <DisplayPanel
                     transcription={transcription}
