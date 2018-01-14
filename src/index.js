@@ -4,11 +4,6 @@ import React, { Component } from 'react';
 import ControlBar from './components/search_bar';
 import TranscribedText from "./components/transcribed_text";
 import { SpeechToText } from 'watson-speech';
-import { AuthorizationV1, SpeechToTextV1 } from 'watson-developer-cloud';
-
-// Text-to-speech Credentials: Supposed to be stored as environment variables
-const USER_NAME = '0125826b-2f5d-4365-8546-bd6830adc6e6';
-const PASSWORD = 'dPRSipKFpTNb';
 
 
 class App extends Component {
@@ -17,8 +12,6 @@ class App extends Component {
         super(props);
 
         this.state = { transcriptionResponse: [], token: '', error: null, labelSpeaker: false };
-        this.transcribeAudio(null);
-        this.stopTranscription();
     }
 
     componentDidMount() {
@@ -26,20 +19,13 @@ class App extends Component {
     }
 
     getApiToken() {
-        let authorization = new AuthorizationV1({
-            username: USER_NAME,
-            password: PASSWORD,
-            url: SpeechToTextV1.URL
-        });
-
-        authorization.getToken(function (error, token) {
-            if (token) {
-                this.setState({ token });
-            } else {
-                this.setState({ error });
-                throw new Error('Oops! There was an error retrieving the token');
+        return fetch('http://localhost:3100/getToken').then((res) => {
+            if (res.status !== 200) {
+                throw new Error('Error retrieving auth token');
             }
-        });
+            return res.text();
+        }) // todo: throw here if non-200 status
+            .then(token => this.setState({ token })).catch(this.handleError);
     }
 
     getTranscriptionOptions(extras) {
@@ -165,23 +151,13 @@ class App extends Component {
             finalResponse.push(latestResponse);
         }
 
-        return final;
+        return finalResponse;
     }
 
 
-
-
-
-
-
-
-
-
-
-    /**
-     * Renders component on DOM
-     */
     render() {
+        const transcription = this.getResponse();
+
         return (
             <div>
                 <ControlBar />
@@ -191,5 +167,6 @@ class App extends Component {
     }
 }
 
+export default App;
 
 ReactDOM.render(<App />, document.querySelector('#container'));
