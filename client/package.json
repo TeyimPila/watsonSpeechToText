@@ -1,0 +1,32 @@
+{
+  "name": "nodespeechtotext",
+  "version": "1.0.0",
+  "description": "A simple speech to text application created with reactJS and nodeJS",
+  "main": "index.js",
+  "proxy": "http://localhost:3001/",
+  "keywords": [
+    "watson",
+    "speech-to-text",
+    "nodejs",
+    "reactjs"
+  ],
+  "author": "Teyim Pila",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.14.11"
+  },
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.6",
+    "react-scripts": "1.0.17",
+    "watson-speech": "^0.34.1"
+  },
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
